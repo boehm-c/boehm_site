@@ -8,7 +8,7 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node", TextType.BOLD_TEXT)
         node2 = TextNode("This is a text node", TextType.BOLD_TEXT)
         self.assertEqual(node, node2)
-    
+
     def test_not_eq(self):
         node = TextNode("This is a text node", TextType.BOLD_TEXT)
         node2 = TextNode("This is a different text node", TextType.BOLD_TEXT)
@@ -24,8 +24,9 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node.text_type, node2.text_type)
 
     def test_has_url(self):
-        node = TextNode("This text node has a url", TextType.CODE_TEXT, '.com')
+        node = TextNode("This text node has a url", TextType.CODE_TEXT, ".com")
         self.assertTrue(node.url)
+
 
 if __name__ == "__main__":
     unittest.main()
