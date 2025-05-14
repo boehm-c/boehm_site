@@ -5,6 +5,12 @@ class HTMLType(Enum):
     PARAGRAPH = "p"
     LINK = "a"
     HEADING = "h1"
+    SPAN = "span"
+    DIV = "div"
+    BOLD = "b"
+    ITALIC = "i"
+    CODE = "code"
+    IMAGE = "img"
 
 
 class HTMLNode:
@@ -44,6 +50,20 @@ class LeafNode(HTMLNode):
         super().__init__(tag=tag, value=value, props=props)
 
     def to_html(self):
-        if self.value is None:
+        if not self.value:
             raise ValueError("Leaf Node must have a value")
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+    
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, children=children, props=props)
+    
+    def to_html(self):
+        if not self.tag:
+            raise ValueError("ParentNodes must have tags")
+        if not self.children:
+            raise ValueError("ParentNodes must have children")
+        new_text = f"<{self.tag}{self.props_to_html()}>"
+        for node in self.children:
+            new_text += node.to_html()
+        return new_text + f"</{self.tag}>"
