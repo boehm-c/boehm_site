@@ -40,7 +40,7 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_leaf_to_html_h1(self):
         node = LeafNode(HTMLType.HEADING, "Hello, world!")
-        self.assertEqual(node.to_html(), '<h1>Hello, world!</h1>')
+        self.assertEqual(node.to_html(), "<h1>Hello, world!</h1>")
 
     def test_to_html_with_children(self):
         child_node = LeafNode(HTMLType.SPAN, "child")

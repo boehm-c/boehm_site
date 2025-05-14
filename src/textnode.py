@@ -44,4 +44,3 @@ class TextNode:
         if self.text_type == "image":
             props = {"src": self.url, "alt": self.text}
             return LeafNode(tag=HTMLType.IMAGE, props=props)
-        
