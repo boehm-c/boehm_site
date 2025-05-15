@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from convertnode import text_to_htmlnode, split_nodes_delimiter
+from convertnode import text_to_htmlnode, split_nodes_delimiter, extract_markdown_images
 
 
 class TestTextNode(unittest.TestCase):
@@ -49,36 +49,47 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(
             split_nodes,
             [
-                TextNode("This is text with a " , TextType.NORMAL_TEXT, None), 
-                TextNode("bolded phrase", TextType.BOLD_TEXT, None), 
-                TextNode(" in the middle", TextType.NORMAL_TEXT, None)
-            ]
+                TextNode("This is text with a ", TextType.NORMAL_TEXT, None),
+                TextNode("bolded phrase", TextType.BOLD_TEXT, None),
+                TextNode(" in the middle", TextType.NORMAL_TEXT, None),
+            ],
         )
 
     def test_split_bold_start_phrase(self):
-        node = TextNode(
-            "**bolded phrase** at the start", TextType.NORMAL_TEXT
-        )
+        node = TextNode("**bolded phrase** at the start", TextType.NORMAL_TEXT)
         split_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
         self.assertEqual(
             split_nodes,
             [
                 TextNode("bolded phrase", TextType.BOLD_TEXT, None),
-                TextNode(" at the start" , TextType.NORMAL_TEXT, None)
-            ]
+                TextNode(" at the start", TextType.NORMAL_TEXT, None),
+            ],
         )
 
     def test_split_bold_end_phrase(self):
-        node = TextNode(
-            "at the end **bolded phrase**", TextType.NORMAL_TEXT
-        )
+        node = TextNode("at the end **bolded phrase**", TextType.NORMAL_TEXT)
         split_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
         self.assertEqual(
             split_nodes,
             [
-                TextNode("at the end " , TextType.NORMAL_TEXT, None), 
-                TextNode("bolded phrase", TextType.BOLD_TEXT, None)
-            ]
+                TextNode("at the end ", TextType.NORMAL_TEXT, None),
+                TextNode("bolded phrase", TextType.BOLD_TEXT, None),
+            ],
+        )
+
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_images(
+            "This is text with a ![link to boot.dev](https://www.boot.dev), and another to ![youtube.com](https://www.youtube.com)"
+        )
+        self.assertListEqual(
+            [("link to boot.dev", "https://www.boot.dev"), ("youtube.com", "https://www.youtube.com")],
+            matches,
         )
 
 
