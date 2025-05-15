@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
+from convertnode import text_to_htmlnode, split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -29,16 +30,56 @@ class TestTextNode(unittest.TestCase):
 
     def test_text_to_htmlnode(self):
         node = TextNode("This is a text node", TextType.NORMAL_TEXT)
-        html_node = node.text_to_htmlnode()
+        html_node = text_to_htmlnode(node)
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "This is a text node")
 
     def test_bold_to_htmlnode(self):
         node = TextNode("This is a bold text node", TextType.BOLD_TEXT)
-        html_node = node.text_to_htmlnode()
+        html_node = text_to_htmlnode(node)
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is a bold text node")
         self.assertEqual(html_node.to_html(), "<b>This is a bold text node</b>")
+
+    def test_split_bold_phrase(self):
+        node = TextNode(
+            "This is text with a **bolded phrase** in the middle", TextType.NORMAL_TEXT
+        )
+        split_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
+        self.assertEqual(
+            split_nodes,
+            [
+                TextNode("This is text with a " , TextType.NORMAL_TEXT, None), 
+                TextNode("bolded phrase", TextType.BOLD_TEXT, None), 
+                TextNode(" in the middle", TextType.NORMAL_TEXT, None)
+            ]
+        )
+
+    def test_split_bold_start_phrase(self):
+        node = TextNode(
+            "**bolded phrase** at the start", TextType.NORMAL_TEXT
+        )
+        split_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
+        self.assertEqual(
+            split_nodes,
+            [
+                TextNode("bolded phrase", TextType.BOLD_TEXT, None),
+                TextNode(" at the start" , TextType.NORMAL_TEXT, None)
+            ]
+        )
+
+    def test_split_bold_end_phrase(self):
+        node = TextNode(
+            "at the end **bolded phrase**", TextType.NORMAL_TEXT
+        )
+        split_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT)
+        self.assertEqual(
+            split_nodes,
+            [
+                TextNode("at the end " , TextType.NORMAL_TEXT, None), 
+                TextNode("bolded phrase", TextType.BOLD_TEXT, None)
+            ]
+        )
 
 
 if __name__ == "__main__":
