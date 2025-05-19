@@ -51,21 +51,15 @@ def split_nodes_image(old_nodes):
     for node in old_nodes:
         current_text = node.text
         markdown_images = extract_markdown_images(current_text)
-        if not len(markdown_images):
-            new_nodes.append(node)
-        else:
-            current_image = 0
-            count_images = len(markdown_images)
-            for image in markdown_images:
-                current_image += 1
-                sections = current_text.split(f"![{image[0]}]({image[1]})", 1)
-                if sections[0] != "":
-                    new_nodes.append(TextNode(sections[0], TextType.NORMAL_TEXT))
-                new_nodes.append(TextNode(image[0], TextType.IMAGE_TEXT, image[1]))
-                if current_image == count_images and sections[1] != "":
-                    new_nodes.append(TextNode(sections[1], TextType.NORMAL_TEXT))
-                else:
-                    current_text = sections[1]
+        while markdown_images:
+            image = markdown_images.pop(0)
+            sections = current_text.split(f"![{image[0]}]({image[1]})", 1)
+            if sections[0] != "":
+                new_nodes.append(TextNode(sections[0], TextType.NORMAL_TEXT))
+            new_nodes.append(TextNode(image[0], TextType.IMAGE_TEXT, image[1]))
+            current_text = sections[1]
+        if current_text:
+            new_nodes.append(TextNode(current_text, TextType.NORMAL_TEXT))
     return new_nodes
 
 
@@ -74,19 +68,13 @@ def split_nodes_link(old_nodes):
     for node in old_nodes:
         current_text = node.text
         markdown_links = extract_markdown_links(current_text)
-        if not len(markdown_links):
-            new_nodes.append(node)
-        else:
-            current_link = 0
-            count_links = len(markdown_links)
-            for link in markdown_links:
-                current_link += 1
-                sections = current_text.split(f"[{link[0]}]({link[1]})", 1)
-                if sections[0] != "":
-                    new_nodes.append(TextNode(sections[0], TextType.NORMAL_TEXT))
-                new_nodes.append(TextNode(link[0], TextType.LINK_TEXT, link[1]))
-                if current_link == count_links and sections[1] != "":
-                    new_nodes.append(TextNode(sections[1], TextType.NORMAL_TEXT))
-                else:
-                    current_text = sections[1]
+        while markdown_links:
+            link = markdown_links.pop(0)
+            sections = current_text.split(f"[{link[0]}]({link[1]})", 1)
+            if sections[0] != "":
+                new_nodes.append(TextNode(sections[0], TextType.NORMAL_TEXT))
+            new_nodes.append(TextNode(link[0], TextType.LINK_TEXT, link[1]))
+            current_text = sections[1]
+        if current_text:
+            new_nodes.append(TextNode(current_text, TextType.NORMAL_TEXT))
     return new_nodes
