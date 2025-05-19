@@ -44,3 +44,60 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        current_text = node.text
+        markdown_images = extract_markdown_images(current_text)
+        if not len(markdown_images):
+            new_nodes.append(node)
+        else:
+            current_image = 0
+            count_images = len(markdown_images)
+            for image in markdown_images:
+                current_image += 1
+                sections = current_text.split(f"![{image[0]}]({image[1]})", 1)
+                if sections[0] != "":
+                    new_nodes.append(TextNode(sections[0], TextType.NORMAL_TEXT))
+                new_nodes.append(TextNode(image[0], TextType.IMAGE_TEXT, image[1]))
+                if current_image == count_images and sections[1] != "":
+                    new_nodes.append(TextNode(sections[1], TextType.NORMAL_TEXT))
+                else:
+                    current_text = sections[1]
+    return new_nodes
+
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        current_text = node.text
+        markdown_links = extract_markdown_links(current_text)
+        if not len(markdown_links):
+            new_nodes.append(node)
+        else:
+            current_link = 0
+            count_links = len(markdown_links)
+            for link in markdown_links:
+                current_link += 1
+                sections = current_text.split(f"[{link[0]}]({link[1]})", 1)
+                if sections[0] != "":
+                    new_nodes.append(TextNode(sections[0], TextType.NORMAL_TEXT))
+                new_nodes.append(TextNode(link[0], TextType.LINK_TEXT, link[1]))
+                if current_link == count_links and sections[1] != "":
+                    new_nodes.append(TextNode(sections[1], TextType.NORMAL_TEXT))
+                else:
+                    current_text = sections[1]
+    return new_nodes
+
+
+test_link_node = TextNode(
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    TextType.NORMAL_TEXT,
+)
+
+test_image_node = TextNode(
+    "![image](https://i.imgur.com/zjjcJKZ.png) This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png) wow",
+    TextType.NORMAL_TEXT,
+)

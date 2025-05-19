@@ -1,7 +1,13 @@
 import unittest
 
 from textnode import TextNode, TextType
-from convertnode import text_to_htmlnode, split_nodes_delimiter, extract_markdown_images
+from convertnode import (
+    text_to_htmlnode,
+    split_nodes_delimiter,
+    extract_markdown_images,
+    split_nodes_image,
+    split_nodes_link,
+)
 
 
 class TestTextNode(unittest.TestCase):
@@ -88,8 +94,55 @@ class TestTextNode(unittest.TestCase):
             "This is text with a ![link to boot.dev](https://www.boot.dev), and another to ![youtube.com](https://www.youtube.com)"
         )
         self.assertListEqual(
-            [("link to boot.dev", "https://www.boot.dev"), ("youtube.com", "https://www.youtube.com")],
+            [
+                ("link to boot.dev", "https://www.boot.dev"),
+                ("youtube.com", "https://www.youtube.com"),
+            ],
             matches,
+        )
+
+    def test_split_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.NORMAL_TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.NORMAL_TEXT),
+                TextNode(
+                    "image", TextType.IMAGE_TEXT, "https://i.imgur.com/zjjcJKZ.png"
+                ),
+                TextNode(" and another ", TextType.NORMAL_TEXT),
+                TextNode(
+                    "second image",
+                    TextType.IMAGE_TEXT,
+                    "https://i.imgur.com/3elNhQu.png",
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_links(self):
+        node = TextNode(
+            "This is text with a [link to myspace](https://www.myspace.com) and another [link to facebook](https://www.facebook.com)",
+            TextType.NORMAL_TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", TextType.NORMAL_TEXT),
+                TextNode(
+                    "link to myspace", TextType.LINK_TEXT, "https://www.myspace.com"
+                ),
+                TextNode(" and another ", TextType.NORMAL_TEXT),
+                TextNode(
+                    "link to facebook",
+                    TextType.LINK_TEXT,
+                    "https://www.facebook.com",
+                ),
+            ],
+            new_nodes,
         )
 
 
