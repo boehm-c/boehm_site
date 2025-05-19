@@ -90,14 +90,3 @@ def split_nodes_link(old_nodes):
                 else:
                     current_text = sections[1]
     return new_nodes
-
-
-test_link_node = TextNode(
-    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-    TextType.NORMAL_TEXT,
-)
-
-test_image_node = TextNode(
-    "![image](https://i.imgur.com/zjjcJKZ.png) This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png) wow",
-    TextType.NORMAL_TEXT,
-)
