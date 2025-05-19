@@ -85,6 +85,7 @@ def split_nodes_link(old_nodes):
             new_nodes.append(node)
     return new_nodes
 
+
 def text_to_textnodes(raw_text):
     node = TextNode(raw_text, TextType.NORMAL)
     nodes = [node]
@@ -93,7 +94,7 @@ def text_to_textnodes(raw_text):
     split_code_nodes = split_nodes_delimiter(split_italic_nodes, "`", TextType.CODE)
     split_image_nodes = split_nodes_image(split_code_nodes)
     split_link_nodes = split_nodes_link(split_image_nodes)
-    return(split_link_nodes)
+    return split_link_nodes
 
 
 # raw_text = 'This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)'

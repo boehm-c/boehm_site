@@ -111,9 +111,7 @@ class TestTextNode(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is text with an ", TextType.NORMAL),
-                TextNode(
-                    "image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"
-                ),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
                 TextNode(" and another ", TextType.NORMAL),
                 TextNode(
                     "second image",
@@ -133,9 +131,7 @@ class TestTextNode(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is text with a ", TextType.NORMAL),
-                TextNode(
-                    "link to myspace", TextType.LINK, "https://www.myspace.com"
-                ),
+                TextNode("link to myspace", TextType.LINK, "https://www.myspace.com"),
                 TextNode(" and another ", TextType.NORMAL),
                 TextNode(
                     "link to facebook",
@@ -171,7 +167,9 @@ class TestTextNode(unittest.TestCase):
                 TextNode(" word and a ", TextType.NORMAL),
                 TextNode("code block", TextType.CODE),
                 TextNode(" and an ", TextType.NORMAL),
-                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(
+                    "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+                ),
                 TextNode(" and a ", TextType.NORMAL),
                 TextNode("link", TextType.LINK, "https://boot.dev"),
             ],
