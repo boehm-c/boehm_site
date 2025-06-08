@@ -11,11 +11,14 @@ class HTMLType(Enum):
     ITALIC = "i"
     CODE = "code"
     IMAGE = "img"
+    UNORDERED_LIST = "ul"
+    ORDERED_LIST = "ol"
+    LIST_ITEM = "li"
 
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
-        self.tag = None if tag is None else tag.value
+        self.tag = tag
         self.value = value
         self.children = [] if children is None else children
         self.props = {} if props is None else props
@@ -53,6 +56,8 @@ class LeafNode(HTMLNode):
     def to_html(self):
         if not self.value:
             raise ValueError("Leaf Node must have a value")
+        if not self.tag:
+            return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 
 

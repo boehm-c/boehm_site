@@ -1,4 +1,7 @@
 from enum import Enum
+from inline_markdown import text_to_textnodes, text_to_htmlnode, text_to_htmlnode
+from htmlnode import ParentNode
+from textnode import TextNode, TextType
 
 BlockType = Enum(
     "BlockType",
@@ -9,7 +12,10 @@ BlockType = Enum(
 def markdown_to_blocks(markdown):
     new_blocks = markdown.split("\n\n")
     clean_blocks = list(
-        map(lambda block: block.strip().replace("\n", "\n"), new_blocks)
+        filter(
+            lambda block: block != "",
+            map(lambda block: block.strip().replace("\n", "\n"), new_blocks),
+        )
     )
     return clean_blocks
 
@@ -43,3 +49,87 @@ def block_to_block_type(markdown_block):
     elif is_ordered:
         return BlockType.ordered_list
     return BlockType.paragraph
+
+
+def markdown_paragraph_to_html(block):
+    p_leafs = list(map(lambda leaf: text_to_htmlnode(leaf), text_to_textnodes(block)))
+    return ParentNode(tag="p", children=p_leafs)
+
+
+def markdown_uol_to_html(block):
+    """
+    1. create leaf node text types
+    2. create parent node list item
+    3. create parent node unordered list
+    """
+    block_list_items = block.split("\n")
+    html_list_items = []
+    for li in block_list_items:
+        li_leafs = list(
+            map(lambda leaf: text_to_htmlnode(leaf), text_to_textnodes(li[2:]))
+        )
+        html_list_items.append(ParentNode(tag="li", children=li_leafs))
+    return ParentNode(tag="ul", children=html_list_items)
+
+
+def markdown_ol_to_html(block):
+    """
+    1. create leaf node text types
+    2. create parent node list item
+    3. create parent node unordered list
+    """
+    ordered_list_items = block.split("\n")
+    html_list_items = []
+
+    for i in range(len(ordered_list_items)):
+        clean_item = ordered_list_items[i].split(f"{str(i+1)}. ", 1)[1]
+        li_leafs = list(
+            map(lambda leaf: text_to_htmlnode(leaf), text_to_textnodes(clean_item))
+        )
+        html_list_items.append(ParentNode(tag="li", children=li_leafs))
+    return ParentNode(tag="ol", children=html_list_items)
+
+
+def markdown_to_html_node(markdown):
+    markdown_blocks = markdown_to_blocks(markdown)
+    html_nodes = []
+    for block in markdown_blocks:
+        block_type = block_to_block_type(block)
+        if block_type.name == "paragraph":
+            html_nodes.append(markdown_paragraph_to_html(block))
+        if block_type.name == "unordered_list":
+            html_nodes.append(markdown_uol_to_html(block))
+        if block_type.name == "ordered_list":
+            html_nodes.append(markdown_ol_to_html(block))
+        if block_type.name == "code":
+            code_node = [text_to_htmlnode(TextNode(block, TextType.CODE))]
+            html_nodes.append(ParentNode(tag="pre", children=code_node))
+    div_node = ParentNode(tag="div", children=html_nodes)
+    print(div_node.to_html())
+    return(div_node)
+    
+
+
+md = """
+## This is a heading 2 with **bold** text
+
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+- list item _1_
+- list item **2**
+
+1. ordered **list item 1**
+2. ordered list item 2
+3. ordered list item ```code``` 3
+
+```
+here is some sick code;
+```
+
+"""
+
+markdown_to_html_node(md)

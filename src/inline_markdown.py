@@ -1,4 +1,4 @@
-from htmlnode import HTMLNode, HTMLType, LeafNode, ParentNode
+from htmlnode import LeafNode
 from textnode import TextNode, TextType
 import re
 
@@ -7,17 +7,19 @@ def text_to_htmlnode(textnode):
     if textnode.text_type == TextType.NORMAL:
         return LeafNode(tag=None, value=textnode.text)
     if textnode.text_type == TextType.BOLD:
-        return LeafNode(tag=HTMLType.BOLD, value=textnode.text)
+        return LeafNode(tag="b", value=textnode.text)
     if textnode.text_type == TextType.ITALIC:
-        return LeafNode(tag=HTMLType.ITALIC, value=textnode.text)
+        return LeafNode(tag="i", value=textnode.text)
     if textnode.text_type == TextType.CODE:
-        return LeafNode(tag=HTMLType.CODE, value=textnode.text)
+        return LeafNode(
+            tag="code", value=textnode.text.replace("```", "").replace("\n", "")
+        )
     if textnode.text_type == TextType.LINK:
         props = {"href": textnode.url}
-        return LeafNode(tag=HTMLType.LINK, value=textnode.text, props=props)
+        return LeafNode(tag="a", value=textnode.text, props=props)
     if textnode.text_type == TextType.IMAGE:
         props = {"src": textnode.url, "alt": textnode.text}
-        return LeafNode(tag=HTMLType.IMAGE, props=props)
+        return LeafNode(tag="img", props=props)
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -87,11 +89,12 @@ def split_nodes_link(old_nodes):
 
 
 def text_to_textnodes(raw_text):
-    node = TextNode(raw_text, TextType.NORMAL)
+    node = TextNode(raw_text.replace("\n", " "), TextType.NORMAL)
     nodes = [node]
     split_bold_nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     split_italic_nodes = split_nodes_delimiter(split_bold_nodes, "_", TextType.ITALIC)
-    split_code_nodes = split_nodes_delimiter(split_italic_nodes, "`", TextType.CODE)
+    split_code_nodes = split_nodes_delimiter(split_italic_nodes, "```", TextType.CODE)
+    split_code_nodes = split_nodes_delimiter(split_code_nodes, "`", TextType.CODE)
     split_image_nodes = split_nodes_image(split_code_nodes)
     split_link_nodes = split_nodes_link(split_image_nodes)
     return split_link_nodes
