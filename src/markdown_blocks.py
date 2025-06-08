@@ -102,12 +102,12 @@ def markdown_to_html_node(markdown):
         if block_type.name == "ordered_list":
             html_nodes.append(markdown_ol_to_html(block))
         if block_type.name == "code":
-            code_node = [text_to_htmlnode(TextNode(block, TextType.CODE))]
+            stripped_block = block.replace("```", "").replace("\n", "")
+            code_node = [text_to_htmlnode(TextNode(stripped_block, TextType.CODE))]
             html_nodes.append(ParentNode(tag="pre", children=code_node))
     div_node = ParentNode(tag="div", children=html_nodes)
     print(div_node.to_html())
-    return(div_node)
-    
+    return div_node
 
 
 md = """

@@ -11,9 +11,7 @@ def text_to_htmlnode(textnode):
     if textnode.text_type == TextType.ITALIC:
         return LeafNode(tag="i", value=textnode.text)
     if textnode.text_type == TextType.CODE:
-        return LeafNode(
-            tag="code", value=textnode.text.replace("```", "").replace("\n", "")
-        )
+        return LeafNode(tag="code", value=textnode.text)
     if textnode.text_type == TextType.LINK:
         props = {"href": textnode.url}
         return LeafNode(tag="a", value=textnode.text, props=props)

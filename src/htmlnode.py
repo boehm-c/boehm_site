@@ -1,21 +1,3 @@
-from enum import Enum
-
-
-class HTMLType(Enum):
-    PARAGRAPH = "p"
-    LINK = "a"
-    HEADING = "h1"
-    SPAN = "span"
-    DIV = "div"
-    BOLD = "b"
-    ITALIC = "i"
-    CODE = "code"
-    IMAGE = "img"
-    UNORDERED_LIST = "ul"
-    ORDERED_LIST = "ol"
-    LIST_ITEM = "li"
-
-
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
