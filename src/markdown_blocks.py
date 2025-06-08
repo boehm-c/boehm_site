@@ -2,6 +2,7 @@ from enum import Enum
 from inline_markdown import text_to_textnodes, text_to_htmlnode, text_to_htmlnode
 from htmlnode import ParentNode
 from textnode import TextNode, TextType
+import re
 
 BlockType = Enum(
     "BlockType",
@@ -56,6 +57,31 @@ def markdown_paragraph_to_html(block):
     return ParentNode(tag="p", children=p_leafs)
 
 
+def markdown_quote_to_html(block):
+    quote_indent = 1
+    quote_list_items = block.split("\n")
+    child_text = []
+    for li in quote_list_items:
+        match = len(re.match(r"^\s*(>+)", li).group(1))
+        text = li[match:].strip()
+        child_text.append(text)
+    p_leafs = list(
+        map(
+            lambda leaf: text_to_htmlnode(leaf), text_to_textnodes(" ".join(child_text))
+        )
+    )
+    return ParentNode(tag="blockquote", children=p_leafs)
+
+
+def markdown_heading_to_html(block):
+    split_block = block.split(" ", 1)
+    heading_tag = f"h{len(split_block[0])}"
+    p_leafs = list(
+        map(lambda leaf: text_to_htmlnode(leaf), text_to_textnodes(split_block[1]))
+    )
+    return ParentNode(tag=heading_tag, children=p_leafs)
+
+
 def markdown_uol_to_html(block):
     """
     1. create leaf node text types
@@ -102,34 +128,12 @@ def markdown_to_html_node(markdown):
         if block_type.name == "ordered_list":
             html_nodes.append(markdown_ol_to_html(block))
         if block_type.name == "code":
-            stripped_block = block.replace("```", "").replace("\n", "")
+            stripped_block = block.replace("```", "")
             code_node = [text_to_htmlnode(TextNode(stripped_block, TextType.CODE))]
             html_nodes.append(ParentNode(tag="pre", children=code_node))
+        if block_type.name == "quote":
+            html_nodes.append(markdown_quote_to_html(block))
+        if block_type.name == "heading":
+            html_nodes.append(markdown_heading_to_html(block))
     div_node = ParentNode(tag="div", children=html_nodes)
-    print(div_node.to_html())
     return div_node
-
-
-md = """
-## This is a heading 2 with **bold** text
-
-This is **bolded** paragraph
-text in a p
-tag here
-
-This is another paragraph with _italic_ text and `code` here
-
-- list item _1_
-- list item **2**
-
-1. ordered **list item 1**
-2. ordered list item 2
-3. ordered list item ```code``` 3
-
-```
-here is some sick code;
-```
-
-"""
-
-markdown_to_html_node(md)
