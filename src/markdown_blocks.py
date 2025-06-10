@@ -137,3 +137,8 @@ def markdown_to_html_node(markdown):
             html_nodes.append(markdown_heading_to_html(block))
     div_node = ParentNode(tag="div", children=html_nodes)
     return div_node
+
+
+md = "![JRR Tolkien sitting](/images/tolkien.png)"
+
+markdown_to_html_node(md)

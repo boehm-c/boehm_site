@@ -17,7 +17,7 @@ def text_to_htmlnode(textnode):
         return LeafNode(tag="a", value=textnode.text, props=props)
     if textnode.text_type == TextType.IMAGE:
         props = {"src": textnode.url, "alt": textnode.text}
-        return LeafNode(tag="img", props=props)
+        return LeafNode(tag="img", value=textnode.text, props=props)
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -96,8 +96,3 @@ def text_to_textnodes(raw_text):
     split_image_nodes = split_nodes_image(split_code_nodes)
     split_link_nodes = split_nodes_link(split_image_nodes)
     return split_link_nodes
-
-
-# raw_text = 'This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)'
-# new_nodes = text_to_textnodes(raw_text)
-# print(new_nodes)
