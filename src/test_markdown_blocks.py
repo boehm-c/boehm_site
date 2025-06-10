@@ -5,6 +5,7 @@ from markdown_blocks import (
     block_to_block_type,
     BlockType,
     markdown_to_html_node,
+    extract_title,
 )
 
 
@@ -73,6 +74,21 @@ This is the same paragraph on a new line
         block = "#######"
         block_type = block_to_block_type(block)
         self.assertEqual(block_type, BlockType.paragraph)
+
+    def test_get_markdown_title(self):
+        md = """
+# This is a heading line
+"""
+        title = extract_title(md)
+        self.assertEqual(title, "This is a heading line")
+
+    def test_extract_title_exception(self):
+        md = """
+There is no heading line
+"""
+        with self.assertRaises(Exception) as context:
+            extract_title(md)
+        self.assertTrue('Markdown Files should contain a title' in str(context.exception))
 
     def test_markdown_to_html_nodes(self):
         self.maxDiff = None

@@ -1,15 +1,7 @@
-from markdown_blocks import markdown_to_html_node
+from markdown_blocks import markdown_to_html_node, extract_title
 from os import listdir, mkdir, makedirs
 from os.path import isfile, join, dirname, exists
 import shutil
-import re
-
-
-def extract_title(markdown):
-    match = re.search(r"^(?<!#)# (.+)", markdown, re.MULTILINE)
-    if match:
-        return match.group(1)
-    raise Exception("Markdown Files should contain a title")
 
 
 def generate_page(from_path, template_path, dest_path):
