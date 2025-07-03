@@ -138,11 +138,13 @@ def markdown_to_html_node(markdown):
     div_node = ParentNode(tag="div", children=html_nodes)
     return div_node
 
+
 def extract_title(markdown):
     match = re.search(r"^(?<!#)# (.+)", markdown, re.MULTILINE)
     if match:
         return match.group(1)
     raise Exception("Markdown Files should contain a title")
+
 
 md = "![JRR Tolkien sitting](/images/tolkien.png)"
 

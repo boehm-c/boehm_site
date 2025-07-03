@@ -88,7 +88,9 @@ There is no heading line
 """
         with self.assertRaises(Exception) as context:
             extract_title(md)
-        self.assertTrue('Markdown Files should contain a title' in str(context.exception))
+        self.assertTrue(
+            "Markdown Files should contain a title" in str(context.exception)
+        )
 
     def test_markdown_to_html_nodes(self):
         self.maxDiff = None
